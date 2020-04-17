@@ -1,0 +1,391 @@
+Design Patterns
+https://app.pluralsight.com/course-player?clipId=0dddca1a-f306-4f1a-b9c1-7729fee08097
+Creational | Structural | Behavioral
+
+_____________
+Creational
+_____________
+•	Singleton
+•	Builder
+•	Prototype
+•	Factory
+•	Abstract factory
+
+
+> Singleton Pattern
+-	Only one instance
+-	Lazily loaded
+Examples - runtime, logger, Spring beans, graphics manager
+Static in nature (not class)
+Private instance, instantiates itself, no params
+
+
+>Builder Pattern
+-	Handles complex constructors
+-	Large number of parameters
+-	Force immutability
+Examples StringBuilder, DocumentBuilder, Locale.builder
+Handle constructions of handling the construction of object that may contain a lot of parameters.
+And we want to make the object immutable when we are done constructing it.
+Typically a static inner class
+
+When you don’t want Beans (classes with no arg constructor and setters/getters) or telescoping constructors
+(many different constructors calling each other, building on each other.
+Using other constructor by calling this(bread, condiments, dressing)) Immutable bc no setters.
+We can enforce the contract inside out builders.
+We have the flexibility of the bean approach, with the contract nature of the constructors.
+
+
+>Prototype pattern
+The type of object is determined by a prototypical instance which is cloned to produce a new instance.
+Often used to get a unique instance of the same object.
+-	Avoids costly creations
+-	Avoids subclassing
+-	Typically don’t use the key word “new” (only first instance, after that they are cloned)
+-	Often utilizes an Interface
+-	Usually implemented with a Registry (the original is kept in the registry)
+Ex: java.lang.Object#clone()
+If an object is expensive to create but we can get what we need by copying the member variables
+then the prototype is a great fit.
+Typically implements the clone/cloneable method and interface
+Shallow (keeps the references, same objects as the original) vs deep copy (copies obj reference)
+-	Sometimes not clear when to use (often a refactoring pattern)
+-	Used with other patterns – Registry
+-	Shallow vs deep copy
+
+
+>Factory method pattern
+Opposite of singleton
+-	Doesn’t expose instantiation logic (clients only know common interface)
+-	Defer to subclasses
+-	Often specified by an architectural framework, implemented by user
+Ex: Calendar (often mistaken as singleton bco no args constructor), ResourceBundle, NumberFormat
+Creating instances and managing lifecycle
+Objects created are referenced through a common interface
+Concrete classes
+Parameterized create method
+Pitfalls: Complexity. Creation take place in the subclasses of the type of factory method we are creating,
+not in factory itself. Not refactored into, needs to be planned.
+
+
+>Abstract Factory Pattern
+- Factory of Factories
+- Factory of related objects
+- Common interface
+- Defer to subclasses
+Ex: DocumentBuilder,often in frameworks rather than standard java API
+Group a collection of factories together AbstractFactory -> ConcreteFactory -> ConcreteProduct
+Typically built using composition
+Can be used for different db types - don’t yet know what to use
+
+
+
+_____________
+Structural
+_____________
+•	Adapter
+•	Bridge
+•	Composite
+•	Decorator
+•	Facade
+•	Flyweight
+•	Proxy
+
+How you use or utilize objects for eg performance or refactoring or memory utilization
+
+
+>Adapter pattern
+Make code work in context which it wasn’t designed for.
+Good for connecting new code to legacy code without changing the contract.
+-	Plug adaptor
+-	Convert interface into another interface
+-	Translate code
+-	Client, Adapter, Adaptee
+Ex  Collection Arrays -> Lists. Streams -most have adapters to work with other streams or
+Client centric. Integrate new client to legacy components. Often implemented to an interface, but not required.
+Adaptee can also be the implementation
+Don’t add functionality. If you want to add, consider eg decorator
+
+
+>Bridge design pattern
+Similar to adapter, difference is that the bridge work with new code whereas the adapter work with legacy code.
+-	Decouple abstraction and implementation
+-	Encapsulation, Composition, Inheritance
+-	Changes in the abstraction won’t affect client
+-	Good to use when we know the details won’t be right at first
+Ex Drivers (JDBC)
+Uses interfaces and abstract classes. Composition over inheritance. More than composition.
+Designed to expect change from both sides.
+Abstraction, Implementor, Refined Abstraction, Concrete Implementor
+Break that functionality apart so that we can make those change independently of one another
+Design for uncertainty. Complexity but flexibility. More than just composition
+
+
+>Composite pattern
+Hierarchical type pattern that deals with tree structures of information.
+-	Meant to treat components the same, whether it is part of you structure or your whole structure
+-	-Compose objects into tree structures
+-	Individual object can be treated the same as a composite object
+-	Same operations applied on the individual and the composite and expect them to work the same way
+Ex. Java.awt.Component, as well as JSF widgets (not part of core API), and RESTful services GETs. Example Map<> putAll()
+Tree structured design.  Root starts with a Component (they are either leaf, or a composite of objects, same operations).
+Composite knows about child components. Component -> Leaf -> Composite
+Pitfalls: can overly simplify a system => difficult to restrict what we want to add.
+Implementation can be costly - collections in collection (but ofttimes ok)
+Composite != Composition
+Not composition. Composition is an object containing another object
+
+
+>Decorator Pattern
+Hierarchical type pattern that builds functionality at each level while utilizing composition from similar data types
+-	Also called a wrapper
+-	Add behavior without affecting others
+-	More than just inheritance. Controlling which pieces compliment you object, not necessarily overriding it
+-	Follows the singe responsibility principle – every class should have responsibility over a single part of the functionality.
+-	Compose behavior dynamically by using one of the subclasses that decorate your object.
+Ex: java.io.InputStream
+Inheritance based. Utilizes composition and inheritance (is-a, has-a).
+Common component but functionality is added in the subcomponents. Alternative to subclassing.
+The constructor requires an instance of the component from the hierarchy -can build upon it and use composition instead of inheritance.
+Exercise: Component, ConcreteComponent, Decorator, ConcreteDecorator
+Pitfalls: new class for every feature added, multiple specialized object.
+Can be confused with simple inheritance, some features shouldn’t be part of the hierarchy. Can be complex for clients.
+Original objects can stay the same, not create concrete object to add functionality.
+
+
+>Facade Pattern
+[Fasad] Simplified interface to a complex or difficult to use system that is often the result of a poorly designed API
+-	Make an API easier to use, hide details from client
+-	Reduce dependencies on outside code
+-	Simplify the interface or client usage
+-	Usually a refactoring pattern
+Example: java.net.URL, javax, faces, context, FacesContext
+Class that utilizes composition in its design. Shouldn’t have a need for inheritance.
+Typically encompasses full lifecycle of the object you are dealing with.
+
+
+>Flyweight Pattern
+Minimizes memory use by sharing data with similarly typed objects
+-	Make a more efficient use of memory, optimization pattern
+-	Large number of similar objects
+-	Especially stateless or immutable (their state cannot be changed after creation) objects
+-	Most of the object states can be extrinsic (not essential or inherent)
+Ex: java.lang.String Strings are immutable objects loaded from a string literal pool that basically is a flyweight factory
+All primitive objects with wrappers that have valueOf method = flyweight in action. Integer, Boolean, Byte, Character, Short, Long
+Pattern of patterns. Factory. Often encompass both creation and structure. Often using cache
+Client, Factory, Flyweight, ConcreteFlyweight
+Pitfalls: Complex pattern, premature optimization, Must understand Factory, Not a graphical pattern (many examples are graphical)
+
+
+>Proxy pattern
+Pattern that acts like an interface to something else
+-	Interface by wrapping
+-	Can add functionality
+-	Can solve problems with: security, simplicity (simplifying an interface to something),
+remote (a remote service call), cost (expensive object to create)
+-	Proxy called to access the real object
+Ex: java.lang.reflect.Proxy -object is a mechanism to facilitate creating proxy patterns in java.
+Java.rmi* -whole package, focused around proxy and remote method invocation.
+Design: Typically, interface based.
+-	Interface and Implementation Class
+-	Java.lang.reflect.InvocationHandler
+-	Java.lang.reflect.Proxy – to facilitate
+UML with: Client, Interface, InvocationHandler, Proxy, Implementation
+Implementation and a class and a proxy handles the call in between
+Download from http://twitter4j.org/en/index.html
+Pitfalls: only one proxy => cannot implement security and auditing in separate proxies.
+Another abstraction. Similar to other patterns (can be hard to identify if you need it).
+
+
+
+_____________
+Behavioral
+_____________
+
+•	Chain of responsibility
+•	Command
+•	Interpreter
+•	Iterator
+•	Mediator
+•	Memento
+•	Observer
+•	State
+•	Strategy
+•	Template method
+•	Visitor
+
+Focused on how objects interact with each other
+
+
+>Chain of responsibility pattern
+- Decoupling the sender and receiver objects (send without knowing who the receiver is and vice versa)
+- Receiver should also contain a reference to the next receiver, the successor.
+It doesn’t know the whole hierarchy but knows who’s next in line
+- Promote loose couplig
+- No handler = ok
+Ex: java.util.logging.Logger#log(). Javax.servlet.Filter#doFilter(). Spring Security filter Chain
+Design: Chain of receiver objects -usually a list. Handler is Interface based.
+ConcreteHandler for each implementation. Each Handler has a reference to the next.
+UML: Handler, ConcreteHandler and its successor
+Pitfalls: Handling/Handler guarantee (we aren’t guaranteed that someone along the chain will handle our request).
+Runtime configuration risk. Chain length / performance issues.
+
+
+>Command pattern
+Lets you encapsulate each request as an object
+-	Encapsulate each request as an object
+-	Object-oriented callback
+-	The sender is decoupled from the processor => increased maintainability
+-	Used for “undo” functionality. The entire request should be contained in the request and then can be rolled back
+Ex: implementations of java.lang.Runnable. javax.swing.Action
+Design: Object per command. Command interface. Execute Method, ‘Unexecute’ method. Can use reflection.
+UML: Command, Invoker, ConcreteCommand
+Exercise: Command, Invoker, ConcreteCommand, Receiver -> Manage state -> Macro Command
+Pitfalls: Dependence on other patterns. Multiple commands (better to use Composite or combine with chains of responsibility).
+Make use of memento pattern for undo functionality to handle state.
+If your tracking of objects need to store a history you may need the prototype pattern for creating copies for commands to store in a list.
+Second most used pattern after singleton
+
+
+>Interpreter pattern
+Used to represent the grammar of a language
+-	Represent grammar
+-	Interpreter a sentence
+-	Map a domain
+-	AST, Abstract syntax tree
+Ex java.util.Pattern, java.text.Format
+Design: Abstract base class -AbstractExpression. Interpret method. TerminalExpressions and NonterminalExpressions
+(Compound expressions typically can call themselves recursively until it finally represents a terminalExpression or multiple sub expressions)
+UML: Context, AbstractExpression (with interpret method), TerminalExpression, NonterminalExpression, Client
+Pitfalls: Complexity, One class per rule, Use of other patterns, adding new variant, Specific case
+
+
+>Iterator pattern
+Navigation without exposing the structure of an object
+-	Traverse a container (Collections)
+-	Doesn’t expose underlying structure
+-	Decouples algorithms
+-	Sequential
+Ex. Java.util.Iterator, java.util.Enumeration (similar to iterator but older)
+Design: Interface based, FactoryMethod based, Independent (but fail fast -two iterators cannot modify
+the underlying object without an error being thrown). (Enumerators are fail safe)
+UML: Iterator, ConcreteIterator
+The object you want to iterate over will provide a method to return an instance of an iterator from it.
+Pitfalls: No access to index, Unidirectional (can only go one way -but ListIterator has forward and backward capability built in),
+Speed/Efficiency (but in large collections it is the most efficient)
+Foreach needs Iterable
+
+
+>Mediator pattern
+Used to handle how objects interact with one another without having them refer to each other explicitly
+-	Loose coupling
+-	Well defined objects the communicate in complex ways
+-	Helps create reusable components
+-	Acts as a hub / router in the application,  all communication goes through it
+Ex java.util.Timer, java.lang.reflect.Method#invoke()
+Design: Interface based with a concrete class. Minimizes inheritance. Knows about colleagues (that don’t know about each other)
+UML: Mediator, ConcreteMediator
+Pittfalls: Be careful not to create a deity object – can become large. The structure can limit subclassing.
+Confused if you should use this instead of the command pattern - can be used together.
+
+
+>Memento pattern
+Great for providing rollback functionality.
+Used to externalize an object’s state, usually to provide rollback functionality.
+-	Need to restore an object to a previous state
+-	Externalizing internal state so that the object can be returned to it later
+(need to be careful not to violate encapsulation while implementing it
+-	Implement undo /rollback functionality inside of the application
+-	Shields complex internals from other objects
+Ex. Java.util.Date, java.io.Serializable
+Design: class based. Originator (the object we want to create a copy or savepoint of, creates a memento).
+Caretaker (manages the copies). Memento (the copy of the originator that we want to store).
+The Memento consists of the Magic Cookie (the combination of fields it takes to recreate or copy the state of the object, stored inside the memento)
+Pitfalls: Can be expensive storing copies. Delete or keep history. Careful not to expose originator information.
+
+
+>Observer pattern
+Decoupling pattern. Have a subject that needs to be observed by one or more observers.
+-	One to Many objects
+-	Decoupled
+-	Often event handling
+-	Different from publisher/subscriber that is asynchronous. Observer synchronous
+-	MVC view event drivern
+Ex: java.util.Observer (deprecated from Java 9- use Listeners instead), java.util.EventListener, javax.jms.Topic
+Design: Subject that need to be observed, typically an interface or abstract class with concrete implementations.
+Observers register themselves with the subjects, interface based with concrete implementations.
+In java.util.Observer the subject implements an Observable interface. Views are observers – event driven applications.
+UML: Subject, Concrete subject, Observer, Concrete observer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+TDD
+Mockito, DbUnit, PowerMockito
+https://app.pluralsight.com/library/courses/test-driven-development-java/table-of-contents
+
+Maven
+Maven installation, Transitive dependencies, Building using Java 11 or newer, using Maven with existing code
+https://app.pluralsight.com/library/courses/maven-fundamentals/table-of-contents
+
+Kotlin
+Functional programming, reification of generic types, Immutability and null checks, using higher order functions
+https://app.pluralsight.com/library/courses/kotlin-fundamentals/table-of-contents
+
+Introduction to graph databases, cypher, and new4j
+https://app.pluralsight.com/library/courses/graph-databases-neo4j-introduction/table-of-contents
+
+Understanding API functionality through Swagger
+https://app.pluralsight.com/library/courses/play-by-play-api-functionality-swagger/table-of-contents
+
+Postgres
+https://app.pluralsight.com/library/courses/postgresql-playbook/table-of-contents
+https://app.pluralsight.com/library/courses/tekpub-postgres/table-of-contents
+https://app.pluralsight.com/library/courses/programming-postgresql/table-of-contents
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
