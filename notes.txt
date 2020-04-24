@@ -316,6 +316,34 @@ Design: Subject that need to be observed, typically an interface or abstract cla
 Observers register themselves with the subjects, interface based with concrete implementations.
 In java.util.Observer the subject implements an Observable interface. Views are observers – event driven applications.
 UML: Subject, Concrete subject, Observer, Concrete observer
+Pitfalls: Unexpected updates. Large update consequences => performance hit. Not knowing what has changed, disconnected nature. Debugging difficulty
+
+
+>State pattern
+Used to incapsulate the state of our application inside of an object.
+Simplifies cyclomatic complexity
+-	Localize state specific behavior
+-	Current application state is stored in an object – the State Object
+-	Separates what state from where we are in the application
+-	Makes objects follow OCP (open close principle). Classes are closed for changes, but the states are open for extension
+Ex: None in the core API! In JSF there is an instance of this pattern. Iterator could be argued to belong to it
+Design: Abstract Class /Interface based. Each state is class based and represented by an individual concrete class per state. Context with multiple states is unaware of the various states using this pattern (if/else -> states)
+UML: Context, State, ConcreteStates
+Pitfalls: Know your states. More classes. Important to keep logic in the state objects and not let conditional logic into Context. State change triggers needs to be identified
+Similar implementation to Strategy pattern (strategy - focused on algorithms instead of state)
+
+
+>Strategy pattern
+Used when you want the algorithm/strategy to be selected at runtime. Externalizes algorithms.
+-	Eliminate conditional statements
+-	Behavior encapsulated in classes
+-	Difficult to add new strategies in application
+-	Client aware of strategies
+-	Client chooses strategy
+Ex: java.util.Comparator
+Design: Typically Abstract base class, Concrete class per strategy. Remove if/else conditionals. Strategies are independent (strategies don’t know about each other)
+UML: Context, Strategy, ConcreteStrategy
+Pitfalls: Client aware of Strategies. Increased number of classes.
 
 
 
