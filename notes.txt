@@ -327,9 +327,11 @@ Simplifies cyclomatic complexity
 -	Separates what state from where we are in the application
 -	Makes objects follow OCP (open close principle). Classes are closed for changes, but the states are open for extension
 Ex: None in the core API! In JSF there is an instance of this pattern. Iterator could be argued to belong to it
-Design: Abstract Class /Interface based. Each state is class based and represented by an individual concrete class per state. Context with multiple states is unaware of the various states using this pattern (if/else -> states)
+Design: Abstract Class /Interface based. Each state is class based and represented by an individual concrete class per state.
+Context with multiple states is unaware of the various states using this pattern (if/else -> states)
 UML: Context, State, ConcreteStates
-Pitfalls: Know your states. More classes. Important to keep logic in the state objects and not let conditional logic into Context. State change triggers needs to be identified
+Pitfalls: Know your states. More classes. Important to keep logic in the state objects and not let conditional logic into Context.
+State change triggers needs to be identified
 Similar implementation to Strategy pattern (strategy - focused on algorithms instead of state)
 
 
@@ -341,10 +343,38 @@ Used when you want the algorithm/strategy to be selected at runtime. Externalize
 -	Client aware of strategies
 -	Client chooses strategy
 Ex: java.util.Comparator
-Design: Typically Abstract base class, Concrete class per strategy. Remove if/else conditionals. Strategies are independent (strategies don’t know about each other)
+Design: Typically Abstract base class, Concrete class per strategy. Remove if/else conditionals.
+Strategies are independent (strategies don’t know about each other)
 UML: Context, Strategy, ConcreteStrategy
 Pitfalls: Client aware of Strategies. Increased number of classes.
 
+
+>Template Pattern
+Define an algorithm that allows subclasses to redefine parts of the algorithm without changing its structure
+-	Code reuse
+-	Common in designing libraries and frameworks
+-	IoC inversion of control frameworks. Allow pluggable components inside of framework
+-	Algorithm emphasis. Forces an algorithm but allows pieces to be configured
+Ex. java.util.Collections#sort(), java.util.AbstractList#indexOf()
+Design: Abstract base class, base calls child, Hooks (may be overridden), operations (must be overridden).
+UML: AbstractBase, ConcreteClass
+Pitfalls: restrict access to methods correctly. Confusing hierarchy (work divided across multiple classes). Difficult program flow
+Hollywood principle: Don’t call us, we’ll call you
+
+
+>Visitor Pattern
+-	Separate an algorithm from an object structure
+-	Expecting change, adding new features and can’t modify existing object structure
+-	Helps to maintain the Open Closed principle
+-	The visitor class contains the changes and specializations rather than changing the original object
+Ex: java.lang.model.element.Element, java.lang.model.element.ElementVisitor
+Design: Interface base. Must design for the visitor pattern from the beginning, hard to retrofit. Visitor and Element.
+ Elements have visit method. Each visitor knows of every element
+UML: Visitor, ConcreteVisitor, Element, ConcreteElement. Element has an accept(Visitor) method. Visitor has a visit(ConcreteElement) method
+Pitfalls: Plan for adaptability (can lead to over architecting, you may build in flexibility that is never needed nor used).
+ Indirection of working with an object outside of its domain can be confusing. Each visitor may not implement all the methods,
+  so you may want to implement the adapter pattern which adds to the complexity.
+We want to use visitor pattern when we are expecting changes inside our application, but we don’t know what they might be. Externalize change.
 
 
 
